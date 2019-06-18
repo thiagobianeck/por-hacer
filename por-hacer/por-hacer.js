@@ -35,9 +35,49 @@ const crear = (descripcion) => {
     return porHacer;
 };
 
-const getListado = () => {
+const getListado = (filtrado) => {
     cargarDB();
-    return listadoPorHacer;
+    if(filtrado === undefined) {
+        return listadoPorHacer;
+    } else if (filtrado === true || filtrado === 'true'){
+        listadoPorHacer = listadoPorHacer.filter(tarea => {
+            return tarea.completado === true || tarea.completado === 'true';
+        });
+        return listadoPorHacer;
+    } else {
+        listadoPorHacer = listadoPorHacer.filter(tarea => {
+            return tarea.completado === false || tarea.completado === 'false';
+        });
+        return listadoPorHacer;
+    }
+
 };
 
-module.exports = { crear, getListado };
+const actualizar = (descripcion, completado = true) => {
+    cargarDB();
+    let index = listadoPorHacer
+        .findIndex( tarea => tarea.descripcion === descripcion);
+
+    if(index >= 0 ) {
+        listadoPorHacer[index].completado = completado;
+        guardarDB();
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const borrar = (descripcion) => {
+    cargarDB();
+    let index = listadoPorHacer
+        .findIndex( tarea => tarea.descripcion === descripcion);
+    if(index >= 0 ) {
+        listadoPorHacer.splice(index, 1);
+        guardarDB();
+        return true;
+    } else {
+        return false;
+    }
+};
+
+module.exports = { crear, getListado, actualizar, borrar };
